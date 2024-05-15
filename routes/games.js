@@ -1,4 +1,5 @@
 const gamesRouter = require("express").Router();
+const { writeData } = require("../utils/data"); // Чтение и запись данных в JSON-файл
 
 const {
   getAllGames,
