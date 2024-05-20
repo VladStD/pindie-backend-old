@@ -78,6 +78,22 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+const filterPassword = (req, res, next) => {
+  const filterUser = (user) => {
+    const { password, ...userWithoutPassword } = user.toObject();
+    return userWithoutPassword;
+  };
+
+  if (req.user) {
+    req.user = filterUser(req.user);
+  }
+  if (req.usersArray) {
+    req.usersArray = req.usersArray.map((user) => filterUser(user));
+  }
+
+  next();
+};
+
 const hashPassword = async (req, res, next) => {
   try {
     // Создаём случайную строку длиной в десять символов
@@ -101,5 +117,6 @@ module.exports = {
   checkEmptyNameAndEmailAndPassword,
   checkIsUserExists,
   updateUser,
+  filterPassword,
   hashPassword
 };

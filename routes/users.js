@@ -1,31 +1,16 @@
-const usersRouter = require('express').Router();
-const checkAuth = require("../middlewares/auth.js");
+const express = require('express');
+const usersRouter = express.Router();
 
-const {
-  findAllUsers,
-  createUser,
-  findUserById,
-  deleteUser,
-  checkEmptyNameAndEmail,
-  checkEmptyNameAndEmailAndPassword,
-  checkIsUserExists,
-  updateUser,
-  hashPassword
-  } = require('../middlewares/users');
-const {
-  sendAllUsers,
-  sendUserCreated,
-  sendUserById,
-  sendUserDeleted,
-  sendUserUpdated,
-  sendMe
-} = require('../controllers/users');
+// Импортируем вспомогательные функции
+const { findAllUsers, createUser, findUserById, updateUser, deleteUser, checkEmptyNameAndEmailAndPassword, checkEmptyNameAndEmail, filterPassword, checkIsUserExists, hashPassword } = require('../middlewares/users');
+const { sendAllUsers, sendUserCreated, sendUserById, sendUserUpdated, sendUserDeleted, sendMe } = require('../controllers/users');
+const { checkAuth } = require('../middlewares/auth');
 
-usersRouter.get("/me", checkAuth, sendMe);
+// Определение маршрутов
+usersRouter.get('/', findAllUsers, filterPassword, sendAllUsers);
 
-// routes/users.js
 usersRouter.post(
-  "/users",
+  "/",
   findAllUsers,
   checkIsUserExists,
   checkEmptyNameAndEmailAndPassword,
@@ -34,18 +19,24 @@ usersRouter.post(
   createUser,
   sendUserCreated
 );
+usersRouter.get('/:id', findUserById, filterPassword, sendUserById);
+
 usersRouter.put(
-  "/users/:id",
+  "/:id",
   checkEmptyNameAndEmail,
   checkAuth,
   updateUser,
   sendUserUpdated
 );
-usersRouter.delete(
-    "/users/:id",
-    checkAuth,
-    deleteUser,
-    sendUserDeleted
-);
 
+usersRouter.delete(
+  "/:id",
+  checkAuth,
+  deleteUser,
+  sendUserDeleted
+); 
+
+usersRouter.get("/me", checkAuth, sendMe); 
+
+// Экспортируем роут для использования в приложении — app.js
 module.exports = usersRouter;
